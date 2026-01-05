@@ -7,6 +7,9 @@ header{width:100%;max-width:680px;display:flex;justify-content:space-between;ali
 h1{font-size:1.4rem}
 .hud{display:flex;gap:12px;align-items:center}
 button{padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer}
+.sound-controls{display:flex;align-items:center;gap:8px}
+#mute{padding:6px 8px;font-size:14px}
+#volume{width:100px}
 .board{display:grid;grid-template-columns:repeat(8, var(--size));gap:6px;max-width:calc(8*var(--size) + 7*6px);}
 .tile{width:var(--size);height:var(--size);display:flex;align-items:center;justify-content:center;font-size:calc(var(--size) * 0.6);background:linear-gradient(#fff,#eee);border-radius:8px;box-shadow:0 2px 0 rgba(0,0,0,0.06);cursor:grab;user-select:none}
 .tile:active{cursor:grabbing}
