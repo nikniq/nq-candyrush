@@ -5,6 +5,7 @@ const restartBtn = document.getElementById('restart')
 const candyTypes = ['🍒','🍋','🍇','🍊','🍓','🥝']
 let squares = []
 let score = 0
+let gameOver = false
 
 // --- Audio manager -------------------------------------------------
 class AudioManager{
@@ -25,7 +26,8 @@ class AudioManager{
       match: tryFileThenGenerated('match', 660, 0.16),
       bump: tryFileThenGenerated('bump', 330, 0.08),
       restart: tryFileThenGenerated('restart', 1100, 0.20),
-      select: tryFileThenGenerated('select', 1200, 0.06)
+      select: tryFileThenGenerated('select', 1200, 0.06),
+      gameover: tryFileThenGenerated('gameover', 220, 0.7)
     }
     this.volume = Number(localStorage.getItem('cr_volume')) || 0.8
     this.muted = localStorage.getItem('cr_muted') === 'true' || false
@@ -180,12 +182,15 @@ function createBoard(){
     board.appendChild(tile)
     squares.push(tile)
   }
+  // after initial fill, check for available moves
+  setTimeout(()=> checkGameOver(), 80)
 }
 
 let dragSrc = null
 let firstSelected = null
 
 function dragStart(e){
+  if(typeof gameOver !== 'undefined' && gameOver) return
   dragSrc = this
   e.dataTransfer.setData('text/plain', this.id)
 }
@@ -216,7 +221,46 @@ function swapTiles(a,b){
   b.textContent = tmp
 }
 
+function hasAvailableMoves(){
+  for(let i=0;i<squares.length;i++){
+    const moves = [i-1,i+1,i-width,i+width]
+    for(const j of moves){
+      if(j<0||j>=squares.length) continue
+      if(i%width===0 && j===i-1) continue
+      if(i%width===width-1 && j===i+1) continue
+      const a = squares[i].textContent
+      const b = squares[j].textContent
+      if(!a || !b) continue
+      squares[i].textContent = b
+      squares[j].textContent = a
+      const groups = findMatches()
+      squares[i].textContent = a
+      squares[j].textContent = b
+      if(groups.length) return true
+    }
+  }
+  return false
+}
+
+function checkGameOver(){
+  if(!hasAvailableMoves()) showGameOver()
+}
+
+function showGameOver(){
+  gameOver = true
+  const ov = document.getElementById('gameOver')
+  if(ov) ov.classList.remove('hidden')
+  audio.play('gameover')
+}
+
+function hideGameOver(){
+  gameOver = false
+  const ov = document.getElementById('gameOver')
+  if(ov) ov.classList.add('hidden')
+}
+
 function handleClick(e){
+  if(typeof gameOver !== 'undefined' && gameOver) return
   const tile = this
   if(firstSelected === tile){
     tile.classList.remove('selected')
@@ -323,8 +367,9 @@ function highlightAndClear(groups){
 
     // allow cascades
     setTimeout(()=>{
-      const next = findMatches()
-      if(next.length) highlightAndClear(next)
+        const next = findMatches()
+        if(next.length) highlightAndClear(next)
+        else checkGameOver()
     }, 160)
   }, 380)
 }
@@ -386,6 +431,14 @@ if(muteBtn && volumeSlider){
     audio.setMuted(!audio.muted)
     muteBtn.textContent = audio.muted ? '🔇' : '🔊'
   })
+  const overlayRestart = document.getElementById('overlay-restart')
+  if(overlayRestart){
+    overlayRestart.addEventListener('click', ()=>{
+      hideGameOver()
+      // trigger the regular restart behavior
+      restartBtn.click()
+    })
+  }
 }
 
 // keep the board resolving continuously for easy play

@@ -17,6 +17,14 @@ button{padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#fff;
 .tile.selected{outline:3px solid rgba(102,204,255,0.9);transform:scale(1.03)}
 .hint{margin-top:12px;color:#555}
 
+/* Game over overlay */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:40}
+.overlay.hidden{display:none}
+.overlay-card{background:#fff;padding:20px 26px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);text-align:center}
+.overlay-card h2{margin-bottom:6px}
+.overlay-card p{color:#666;margin-bottom:12px}
+.overlay-card button{padding:8px 14px}
+
 /* flashing highlight for matched candies before clearing */
 .tile.flashing{animation:flashOutline 380ms ease-in-out 1;}
 @keyframes flashOutline{

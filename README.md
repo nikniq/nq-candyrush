@@ -18,4 +18,6 @@ The demo supports simple sound effects. Place audio files (WAV/MP3/OGG) under `a
 - `restart.wav` — played when clicking Restart
 - `select.wav` — played when selecting a tile
 
+- `gameover.wav` — played when no moves remain and the game ends
+
 Use the volume slider and mute button in the HUD to control audio. Volume state is persisted in `localStorage`.
